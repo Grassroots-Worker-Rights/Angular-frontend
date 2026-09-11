@@ -31,9 +31,11 @@ export class ChatService {
     this.messagesSubject.next(newMessages);
     this.isLoadingSubject.next(true);
 
-    // SLIDING WINDOW: Only send the last 6 messages to prevent payload overflow
+    // SLIDING WINDOW: Send the last 14 messages (7 Q&A pairs) to maintain context
+    // for complex labour-law consultations while keeping the payload well within
+    // the backend's 20 000-character hard limit.
     const payload = {
-      messages: newMessages.slice(-6)
+      messages: newMessages.slice(-14)
     };
 
     // Call Spring Boot backend
