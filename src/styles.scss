@@ -88,6 +88,25 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 500;
 }
 
+// Self-hosted Material Icons font class (replaces fonts.googleapis.com/icon?family=Material+Icons)
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 // Visible keyboard focus everywhere (mouse clicks stay clean thanks to :focus-visible)
 :focus-visible {
   outline: 3px solid rgba(220, 38, 38, 0.55);
