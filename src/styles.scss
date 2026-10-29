@@ -24,6 +24,52 @@ $app-theme: mat.m2-define-light-theme((
 // Apply theme to all Material components
 @include mat.all-component-themes($app-theme);
 
+// ─── Design tokens ───────────────────────────────────────────────────────────
+// Palette is taken from the logo: ink black, flag red, warm paper cream.
+:root {
+  --brand-red: #dc2626;
+  --brand-red-strong: #b91c1c;
+  --brand-red-soft: rgba(220, 38, 38, 0.1);
+  --ink: #111827;
+  --ink-2: #1f2937;
+  --ink-3: #374151;
+  --cream: #fdf8ee;
+  --cream-2: #f5ecda;
+  --paper: #ffffff;
+  --text: #1f2937;
+  --text-muted: #6b7280;
+  --line: rgba(17, 24, 39, 0.08);
+
+  --font-display: 'Roboto Condensed', 'Roboto', sans-serif;
+  --font-body: 'Roboto', sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.06), 0 1px 3px rgba(17, 24, 39, 0.08);
+  --shadow-md: 0 2px 4px rgba(17, 24, 39, 0.04), 0 8px 24px rgba(17, 24, 39, 0.08);
+  --shadow-lg: 0 4px 8px rgba(17, 24, 39, 0.04), 0 20px 48px rgba(17, 24, 39, 0.14);
+  --shadow-red: 0 10px 30px rgba(220, 38, 38, 0.28);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+// Reduced-motion: every animation falls back to `--animation-reduced` (none by default),
+// so components can opt into a gentler variant next to the original declaration.
+@property --animation-reduced {
+  syntax: '*';
+  inherits: false;
+  initial-value: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: var(--animation-reduced) !important;
+  }
+}
+
 // Global base styles
 html, body {
   height: 100%;
@@ -31,24 +77,43 @@ html, body {
 }
 
 body {
-  font-family: 'Roboto', sans-serif;
-  background-color: #f9fafb;
+  font-family: var(--font-body);
+  background-color: var(--cream);
+  color: var(--text);
   overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Oswald', sans-serif;
-  font-weight: 400;
+  font-family: var(--font-display);
+  font-weight: 500;
 }
 
-// Mobile-first: sidenav container height
+// Visible keyboard focus everywhere (mouse clicks stay clean thanks to :focus-visible)
+:focus-visible {
+  outline: 3px solid rgba(220, 38, 38, 0.55);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Mobile-first: sidenav container height (full viewport for floating navbar)
 .sidenav-container {
-  height: calc(100vh - 56px);
+  height: 100vh;
 }
 
 @media (min-width: 768px) {
   .sidenav-container {
-    height: calc(100vh - 64px);
+    height: 100vh;
   }
 }
 

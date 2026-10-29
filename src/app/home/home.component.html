@@ -1,50 +1,144 @@
-<!-- Expansive Hero Section -->
-<section class="expansive-hero">
-  <div class="expansive-hero-overlay"></div>
-  <div class="hero-content-wrapper">
-    <h1 class="hero-title">{{ 'HOME.HERO.EXPANSIVE_TITLE' | translate }}</h1>
-    <p class="hero-subtitle">{{ 'HOME.HERO.EXPANSIVE_SUBTITLE' | translate }}</p>
+<!-- ─── Hero ──────────────────────────────────────────────────────────────── -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-bg" aria-hidden="true">
+    <img class="hero-art" src="hero-bg-art.webp" alt="" width="1312" height="756" fetchpriority="high" />
+    <div class="hero-grain"></div>
+  </div>
 
-    <div class="hero-actions">
-      <a mat-flat-button class="cta-primary" routerLink="/wiki">
+  <div class="hero-inner">
+    <p class="hero-badge reveal" style="--d: 0ms">
+      <span class="hero-badge__dot"></span>
+      {{ 'HOME.HERO.BADGE' | translate }}
+    </p>
+
+    <h1 id="hero-title" class="hero-title">
+      <span class="hero-title__line reveal" style="--d: 80ms">{{ 'HOME.HERO.TITLE_LINE_1' | translate }}</span>
+      <span class="hero-title__line hero-title__accent reveal" style="--d: 180ms">
+        {{ 'HOME.HERO.TITLE_LINE_2' | translate }}
+        <svg class="brush" viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true">
+          <path pathLength="1" d="M4 13 C 60 6, 120 5, 180 8 S 270 12, 296 7" />
+        </svg>
+      </span>
+    </h1>
+
+    <p class="hero-subtitle reveal" style="--d: 280ms">{{ 'HOME.HERO.EXPANSIVE_SUBTITLE' | translate }}</p>
+
+    <form class="ask reveal" style="--d: 380ms" role="search" (ngSubmit)="ask()">
+      <label class="visually-hidden" for="hero-ask-input">{{ 'HOME.HERO.ASK_LABEL' | translate }}</label>
+      <mat-icon class="ask__icon" aria-hidden="true">auto_awesome</mat-icon>
+      <input id="hero-ask-input"
+             class="ask__input"
+             name="question"
+             type="text"
+             autocomplete="off"
+             enterkeyhint="send"
+             maxlength="1500"
+             [(ngModel)]="question"
+             [placeholder]="'HOME.HERO.ASK_PLACEHOLDER' | translate" />
+      <button id="hero-ask-submit" class="ask__submit" type="submit"
+              [attr.aria-label]="'HOME.HERO.ASK_SUBMIT' | translate">
+        <mat-icon aria-hidden="true">send</mat-icon>
+      </button>
+    </form>
+
+    <ul class="suggestions reveal" style="--d: 460ms" [attr.aria-label]="'HOME.HERO.SUGGESTIONS_LABEL' | translate">
+      @for (key of suggestionKeys; track key; let i = $index) {
+        <li>
+          <button type="button" class="suggestion" [id]="'hero-suggestion-' + (i + 1)" (click)="askSuggestion(key)">
+            {{ key | translate }}
+          </button>
+        </li>
+      }
+    </ul>
+
+    <div class="hero-actions reveal" style="--d: 540ms">
+      <a id="hero-cta-wiki" class="btn btn--primary" routerLink="/wiki">
+        <mat-icon aria-hidden="true">menu_book</mat-icon>
         {{ 'HOME.HERO.CTA_PRIMARY' | translate }}
       </a>
-      <a mat-stroked-button class="cta-secondary" routerLink="/tools">
+      <a id="hero-cta-tools" class="btn btn--ghost" routerLink="/tools">
+        <mat-icon aria-hidden="true">calculate</mat-icon>
         {{ 'HOME.HERO.CTA_SECONDARY' | translate }}
       </a>
     </div>
   </div>
 </section>
 
-<!-- Features Grid -->
-<section class="features">
-  <mat-card class="feature-card feature-card--clickable" (click)="openAiChat()">
-    <mat-card-header>
-      <mat-icon class="feature-icon">smart_toy</mat-icon>
-      <mat-card-title>{{ 'HOME.FEATURES.AI_TITLE' | translate }}</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <p>{{ 'HOME.FEATURES.AI_DESC' | translate }}</p>
-    </mat-card-content>
-  </mat-card>
+<!-- ─── Stats strip (overlaps the hero's bottom edge) ─────────────────────── -->
+<section class="stats-wrap" [attr.aria-label]="'HOME.STATS.LABEL' | translate">
+  <dl class="stats reveal" style="--d: 620ms">
+    @if (articleCount() > 0) {
+      <div class="stat">
+        <dt class="stat__label">{{ 'HOME.STATS.ARTICLES' | translate }}</dt>
+        <dd class="stat__value">{{ articlesShown() }}</dd>
+      </div>
+    }
+    <div class="stat">
+      <dt class="stat__label">{{ 'HOME.STATS.TOOLS' | translate }}</dt>
+      <dd class="stat__value">{{ toolsShown() }}</dd>
+    </div>
+    <div class="stat">
+      <dt class="stat__label">{{ 'HOME.STATS.AI' | translate }}</dt>
+      <dd class="stat__value">{{ 'HOME.STATS.AI_VALUE' | translate }}</dd>
+    </div>
+    <div class="stat">
+      <dt class="stat__label">{{ 'HOME.STATS.FREE' | translate }}</dt>
+      <dd class="stat__value">{{ 'HOME.STATS.FREE_VALUE' | translate }}</dd>
+    </div>
+  </dl>
+</section>
 
-  <mat-card class="feature-card feature-card--clickable" (click)="goToWiki()">
-    <mat-card-header>
-      <mat-icon class="feature-icon">menu_book</mat-icon>
-      <mat-card-title>{{ 'HOME.FEATURES.WIKI_TITLE' | translate }}</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <p>{{ 'HOME.FEATURES.WIKI_DESC' | translate }}</p>
-    </mat-card-content>
-  </mat-card>
+<!-- ─── Seasonal highlight ─────────────────────────────────────────────────── -->
+@let s = season();
+<section class="seasonal-wrap" aria-labelledby="seasonal-title">
+  <div class="seasonal scroll-reveal">
+    <div class="seasonal__icon" aria-hidden="true">
+      <mat-icon>{{ s.icon }}</mat-icon>
+    </div>
+    <div class="seasonal__body">
+      <p class="seasonal__eyebrow">{{ 'HOME.SEASONAL.EYEBROW' | translate }}</p>
+      <h2 id="seasonal-title" class="seasonal__title">{{ 'HOME.SEASONAL.' + s.id + '.TITLE' | translate }}</h2>
+      <p class="seasonal__text">{{ 'HOME.SEASONAL.' + s.id + '.TEXT' | translate }}</p>
+    </div>
+    <a id="seasonal-cta" class="btn btn--primary seasonal__cta" routerLink="/tools" [fragment]="s.toolKey">
+      {{ 'HOME.SEASONAL.CTA' | translate }}
+      <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+    </a>
+  </div>
+</section>
 
-  <mat-card class="feature-card feature-card--clickable" routerLink="/tools">
-    <mat-card-header>
-      <mat-icon class="feature-icon">calculate</mat-icon>
-      <mat-card-title>{{ 'HOME.FEATURES.TOOLS_TITLE' | translate }}</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <p>{{ 'HOME.FEATURES.TOOLS_DESC' | translate }}</p>
-    </mat-card-content>
-  </mat-card>
+<!-- ─── Features ───────────────────────────────────────────────────────────── -->
+<section class="features-wrap" aria-labelledby="features-title">
+
+  <div class="features">
+    <button id="feature-ai" type="button" class="feature scroll-reveal" (click)="openAiChat()">
+      <span class="feature__icon" aria-hidden="true"><mat-icon>smart_toy</mat-icon></span>
+      <h3 class="feature__title">{{ 'HOME.FEATURES.AI_TITLE' | translate }}</h3>
+      <p class="feature__desc">{{ 'HOME.FEATURES.AI_DESC' | translate }}</p>
+      <span class="feature__link">
+        {{ 'HOME.FEATURES.AI_CTA' | translate }}
+        <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+      </span>
+    </button>
+
+    <a id="feature-wiki" class="feature scroll-reveal" routerLink="/wiki">
+      <span class="feature__icon" aria-hidden="true"><mat-icon>menu_book</mat-icon></span>
+      <h3 class="feature__title">{{ 'HOME.FEATURES.WIKI_TITLE' | translate }}</h3>
+      <p class="feature__desc">{{ 'HOME.FEATURES.WIKI_DESC' | translate }}</p>
+      <span class="feature__link">
+        {{ 'HOME.FEATURES.WIKI_CTA' | translate }}
+        <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+      </span>
+    </a>
+
+    <a id="feature-tools" class="feature scroll-reveal" routerLink="/tools">
+      <span class="feature__icon" aria-hidden="true"><mat-icon>calculate</mat-icon></span>
+      <h3 class="feature__title">{{ 'HOME.FEATURES.TOOLS_TITLE' | translate }}</h3>
+      <p class="feature__desc">{{ 'HOME.FEATURES.TOOLS_DESC' | translate }}</p>
+      <span class="feature__link">
+        {{ 'HOME.FEATURES.TOOLS_CTA' | translate }}
+        <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+      </span>
+    </a>
+  </div>
 </section>

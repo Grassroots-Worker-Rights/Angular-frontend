@@ -62,27 +62,108 @@ import { SearchService, SearchResult } from '../services/search.service';
     </div>
   `,
   styles: [`
-    :host { display: flex; flex: 1 1 auto; min-width: 120px; max-width: 380px; margin: 0 12px; }
-    .search-wrap { position: relative; width: 100%; max-width: 360px; }
-    .search-field { width: 100%; font-size: 0.9rem; }
-    /* keep the toolbar compact */
-    .search-field ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
-    /* The toolbar is dark, so make the field light-on-dark and readable. */
-    .search-field ::ng-deep .mat-mdc-text-field-wrapper { background: rgba(255,255,255,0.15); border-radius: 8px; }
-    .search-field ::ng-deep input.mat-mdc-input-element { color: #fff; caret-color: #fff; }
-    .search-field ::ng-deep input.mat-mdc-input-element::placeholder {
-      color: rgba(255,255,255,0.7); -webkit-text-fill-color: rgba(255,255,255,0.7);
+    :host {
+      display: flex;
+      align-items: center;
+      flex: 0 1 320px;
+      min-width: 90px;
+      max-width: 320px;
+      margin: 0 12px;
+      height: 38px;
+
+      @media (max-width: 1150px) {
+        max-width: 200px;
+        margin: 0 8px;
+      }
+
+      @media (max-width: 950px) {
+        max-width: 140px;
+        margin: 0 6px;
+      }
     }
-    .search-field ::ng-deep .mat-mdc-form-field-icon-prefix,
-    .search-field ::ng-deep .mat-mdc-form-field-icon-suffix,
-    .search-field ::ng-deep mat-icon { color: rgba(255,255,255,0.9); }
+    .search-wrap {
+      position: relative;
+      width: 100%;
+      height: 38px;
+      display: flex;
+      align-items: center;
+    }
+    .search-field {
+      width: 100%;
+      height: 38px;
+      font-size: 0.88rem;
+    }
+    /* keep the toolbar compact and fix vertical centering */
+    .search-field ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
+    /* Pill-shaped search bar matching the mockup, compact 38px height */
+    .search-field ::ng-deep .mat-mdc-text-field-wrapper {
+      background: rgba(255, 255, 255, 0.08) !important;
+      border-radius: 999px !important;
+      height: 38px !important;
+      min-height: 38px !important;
+      max-height: 38px !important;
+      padding: 0 8px 0 12px !important;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      display: flex !important;
+      align-items: center !important;
+      transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .search-field.mat-focused ::ng-deep .mat-mdc-text-field-wrapper {
+      background: rgba(255, 255, 255, 0.12) !important;
+      border-color: rgba(248, 113, 113, 0.65) !important;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+    }
+    .search-field ::ng-deep .mat-mdc-form-field-flex {
+      height: 38px !important;
+      min-height: 38px !important;
+      align-items: center !important;
+    }
+    .search-field ::ng-deep .mat-mdc-form-field-infix {
+      padding: 0 !important;
+      min-height: unset !important;
+      height: 38px !important;
+      display: flex !important;
+      align-items: center !important;
+    }
+    /* Hide the default MDC notch borders since wrapper is cleanly bordered */
     .search-field ::ng-deep .mdc-notched-outline__leading,
     .search-field ::ng-deep .mdc-notched-outline__notch,
-    .search-field ::ng-deep .mdc-notched-outline__trailing { border-color: rgba(255,255,255,0.35); }
+    .search-field ::ng-deep .mdc-notched-outline__trailing {
+      border: none !important;
+    }
+    .search-field ::ng-deep .mat-mdc-form-field-icon-prefix {
+      padding: 0 !important;
+      margin-right: 8px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+    }
+    .search-field ::ng-deep .mat-mdc-form-field-icon-prefix mat-icon {
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 18px !important;
+      width: 18px !important;
+      height: 18px !important;
+    }
+    .search-field ::ng-deep input.mat-mdc-input-element {
+      color: #fff;
+      caret-color: #fff;
+      padding-left: 4px !important;
+      font-size: 0.88rem;
+    }
+    .search-field ::ng-deep input.mat-mdc-input-element::placeholder {
+      color: rgba(255, 255, 255, 0.65);
+      -webkit-text-fill-color: rgba(255, 255, 255, 0.65);
+    }
+    .search-field ::ng-deep .mat-mdc-form-field-icon-suffix mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: rgba(255, 255, 255, 0.75);
+    }
     .search-results {
-      position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 1000;
-      background: #fff; color: #1f2937; border-radius: 8px; max-height: 60vh; overflow-y: auto;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      position: absolute; top: calc(100% + 8px); left: 0; right: 0; z-index: 1000;
+      background: #fff; color: #1f2937; border-radius: 14px; max-height: 60vh; overflow-y: auto;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+      border: 1px solid rgba(0,0,0,0.08);
     }
     .search-result {
       display: block; padding: 10px 14px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.06);

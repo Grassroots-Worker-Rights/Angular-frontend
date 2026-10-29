@@ -1,0 +1,128 @@
+<div class="page-container">
+  <!-- Header / Banner -->
+  <header class="page-header">
+    <div class="header-bg" aria-hidden="true">
+      <div class="header-rays"></div>
+      <div class="header-glow"></div>
+    </div>
+    <div class="header-content">
+      <span class="eyebrow">{{ 'ABOUT.EYEBROW' | translate }}</span>
+      <h1 class="page-title">{{ 'ABOUT.TITLE' | translate }}</h1>
+      <p class="lead">{{ 'ABOUT.LEAD' | translate }}</p>
+
+      <div class="values-chips">
+        <span class="chip"><mat-icon>check_circle</mat-icon> {{ 'ABOUT.VALUES.FREE' | translate }}</span>
+        <span class="chip"><mat-icon>security</mat-icon> {{ 'ABOUT.VALUES.ANONYMOUS' | translate }}</span>
+        <span class="chip"><mat-icon>shield</mat-icon> {{ 'ABOUT.VALUES.INDEPENDENT' | translate }}</span>
+        <span class="chip"><mat-icon>groups</mat-icon> {{ 'ABOUT.VALUES.COLLECTIVE' | translate }}</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Sections -->
+  <main class="page-body">
+    <div class="content-grid">
+      <!-- Section: What is it -->
+      <section class="card">
+        <div class="card-icon"><mat-icon>menu_book</mat-icon></div>
+        <h2>{{ 'ABOUT.WHAT.TITLE' | translate }}</h2>
+        <p>{{ 'ABOUT.WHAT.P1' | translate }}</p>
+        <p>{{ 'ABOUT.WHAT.P2' | translate }}</p>
+        <ul class="pillars-list">
+          <li><strong>{{ 'NAV.WIKI' | translate }}:</strong> {{ 'ABOUT.WHAT.PILLAR_WIKI' | translate }}</li>
+          <li><strong>{{ 'NAV.TOOLS' | translate }}:</strong> {{ 'ABOUT.WHAT.PILLAR_TOOLS' | translate }}</li>
+          <li><strong>{{ 'HOME.FEATURES.AI_TITLE' | translate }}:</strong> {{ 'ABOUT.WHAT.PILLAR_AI' | translate }}</li>
+        </ul>
+      </section>
+
+      <!-- Section: Who are we -->
+      <section class="card">
+        <div class="card-icon"><mat-icon>diversity_3</mat-icon></div>
+        <h2>{{ 'ABOUT.WHO.TITLE' | translate }}</h2>
+        <p [innerHTML]="'ABOUT.WHO.P1' | translate: orgUrls"></p>
+        <p>{{ 'ABOUT.WHO.P2' | translate }}</p>
+      </section>
+
+      <!-- Section: Why Vasis -->
+      <section class="card">
+        <div class="card-icon"><mat-icon>campaign</mat-icon></div>
+        <h2>{{ 'ABOUT.WHY.TITLE' | translate }}</h2>
+        <p>{{ 'ABOUT.WHY.P1' | translate }}</p>
+        <p>{{ 'ABOUT.WHY.P2' | translate }}</p>
+      </section>
+
+      <!-- Section: How AI Works -->
+      <section class="card">
+        <div class="card-icon"><mat-icon>smart_toy</mat-icon></div>
+        <h2>{{ 'ABOUT.AI.TITLE' | translate }}</h2>
+        <p>{{ 'ABOUT.AI.P1' | translate }}</p>
+        <div class="notice-box">
+          <p class="notice-title"><mat-icon>info</mat-icon> Σημεία προσοχής:</p>
+          <ul>
+            <li>{{ 'ABOUT.AI.LIMIT_1' | translate }}</li>
+            <li>{{ 'ABOUT.AI.LIMIT_2' | translate }}</li>
+            <li>{{ 'ABOUT.AI.LIMIT_3' | translate }}</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Section: Privacy -->
+      <section class="card">
+        <div class="card-icon"><mat-icon>lock</mat-icon></div>
+        <h2>{{ 'ABOUT.PRIVACY.TITLE' | translate }}</h2>
+        <ul class="check-list">
+          <li><mat-icon>verified</mat-icon> {{ 'ABOUT.PRIVACY.ITEM_1' | translate }}</li>
+          <li><mat-icon>verified</mat-icon> {{ 'ABOUT.PRIVACY.ITEM_2' | translate }}</li>
+          <li><mat-icon>verified</mat-icon> {{ 'ABOUT.PRIVACY.ITEM_3' | translate }}</li>
+          <li><mat-icon>verified</mat-icon> {{ 'ABOUT.PRIVACY.ITEM_4' | translate }}</li>
+        </ul>
+      </section>
+
+      <!-- Section: Disclaimer -->
+      <section class="card card--muted">
+        <div class="card-icon"><mat-icon>gavel</mat-icon></div>
+        <h2>{{ 'ABOUT.DISCLAIMER.TITLE' | translate }}</h2>
+        <p>{{ 'ABOUT.DISCLAIMER.P1' | translate }}</p>
+      </section>
+
+      <!-- Section: Contribute -->
+      <section class="card">
+        <div class="card-icon"><mat-icon>volunteer_activism</mat-icon></div>
+        <h2>{{ 'ABOUT.CONTRIBUTE.TITLE' | translate }}</h2>
+        <p>{{ 'ABOUT.CONTRIBUTE.P1' | translate }}</p>
+        @if (hasContact) {
+          <div class="contact-links">
+            @if (siteConfig.contactEmail) {
+              <a [href]="'mailto:' + siteConfig.contactEmail" class="contact-btn">
+                <mat-icon>mail</mat-icon> {{ siteConfig.contactEmail }}
+              </a>
+            }
+            @if (siteConfig.contactUrl) {
+              <a [href]="siteConfig.contactUrl" target="_blank" rel="noopener" class="contact-btn">
+                <mat-icon>open_in_new</mat-icon> Φόρμα Επικοινωνίας
+              </a>
+            }
+          </div>
+        } @else {
+          <p class="contact-placeholder"><em>{{ 'FOOTER.CONTACT_SOON' | translate }}</em></p>
+        }
+      </section>
+    </div>
+
+    <!-- CTA Section -->
+    <section class="cta-banner">
+      <div class="cta-content">
+        <h2>{{ 'ABOUT.CTA.TITLE' | translate }}</h2>
+        <p>{{ 'ABOUT.CTA.TEXT' | translate }}</p>
+        <div class="cta-actions">
+          <button mat-flat-button color="warn" class="btn-primary" (click)="openAiChat()">
+            <mat-icon>support_agent</mat-icon> {{ 'ABOUT.CTA.ASK' | translate }}
+          </button>
+          <a mat-stroked-button class="btn-secondary" routerLink="/faq">
+            <mat-icon>help_outline</mat-icon> {{ 'NAV.FAQ' | translate }}
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

@@ -6,6 +6,7 @@ import { provideRouter, Router } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideHttpClient } from '@angular/common/http';
 import { App } from './app';
+import { ChatLauncherService } from './services/chat-launcher.service';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -130,7 +131,7 @@ describe('App - Template Rendering', () => {
       const nav = fixture.nativeElement.querySelector('nav.desktop-nav');
       expect(nav).not.toBeNull();
       const links = nav.querySelectorAll('a[mat-button]');
-      expect(links.length).toBe(3);
+      expect(links.length).toBe(5);
     });
 
     it('should NOT render desktop nav links when isDesktop() is false', () => {
@@ -241,14 +242,14 @@ describe('App - Interactions', () => {
     expect(component.sidenavOpened()).toBe(false);
   });
 
-  it('should call router.navigate(["/support"]) when FAB is clicked (Requirement 8.7)', () => {
-    const { component, router } = setup(false);
-
-    const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+  it('should call chatLauncher.open() when FAB is clicked (Requirement 8.7)', () => {
+    const { component } = setup(false);
+    const chatLauncher = TestBed.inject(ChatLauncherService);
+    const openSpy = vi.spyOn(chatLauncher, 'open').mockReturnValue(null as any);
 
     component.navigateToSupport();
 
-    expect(navigateSpy).toHaveBeenCalledWith(['/support']);
+    expect(openSpy).toHaveBeenCalled();
   });
 
   it('should close sidenav when closeSidenavOnMobile() is called in mode="over" (Requirement 6.8)', () => {
@@ -354,7 +355,7 @@ describe('App - Translation File Structure (Requirements 2.2–2.5, 2.7)', () =>
   let translations: Record<string, unknown>;
 
   beforeAll(() => {
-    const filePath = path.resolve(__dirname, '../assets/i18n/el.json');
+    const filePath = path.resolve(__dirname, '../../public/assets/i18n/el.json');
     const fileContent = fs.readFileSync(filePath, 'utf-8');
     translations = JSON.parse(fileContent);
   });

@@ -1,30 +1,37 @@
-<mat-toolbar color="primary" class="app-toolbar">
-  @if (!isDesktop() && isSidenavVisible) {
-    <button mat-icon-button
-            [attr.aria-label]="'GENERAL.OPEN_MENU' | translate"
-            (click)="toggleSidenav()">
-      <mat-icon>menu</mat-icon>
-    </button>
-  }
+<header class="app-header-fixed">
+  <mat-toolbar color="primary" class="app-toolbar">
+    @if (!isDesktop()) {
+      <button mat-icon-button
+              [attr.aria-label]="'GENERAL.OPEN_MENU' | translate"
+              (click)="toggleSidenav()">
+        <mat-icon>menu</mat-icon>
+      </button>
+    }
 
-  <span class="toolbar-title">{{ 'NAV.TITLE' | translate }}</span>
+    <a routerLink="/" class="brand-link" [attr.aria-label]="'NAV.HOME_LINK_LABEL' | translate">
+      <img src="logo-icon-96.webp" alt="" class="toolbar-logo" width="36" height="36" />
+      <span class="toolbar-title">{{ 'NAV.TITLE' | translate }}</span>
+    </a>
 
-  <app-search class="toolbar-search"></app-search>
+    <app-search class="toolbar-search"></app-search>
 
-  <span class="toolbar-spacer"></span>
+    <span class="toolbar-spacer"></span>
 
-  @if (isDesktop()) {
-    <nav class="desktop-nav">
-      <a mat-button routerLink="">{{ 'NAV.HOME' | translate }}</a>
-      <a mat-button routerLink="/wiki">{{ 'NAV.WIKI' | translate }}</a>
-      <a mat-button routerLink="/tools">{{ 'NAV.TOOLS' | translate }}</a>
-    </nav>
-  }
-</mat-toolbar>
+    @if (isDesktop()) {
+      <nav class="desktop-nav" [attr.aria-label]="'NAV.MAIN_LABEL' | translate">
+        <a mat-button routerLink="/" routerLinkActive="active-nav-link" [routerLinkActiveOptions]="{ exact: true }">{{ 'NAV.HOME' | translate }}</a>
+        <a mat-button routerLink="/wiki" routerLinkActive="active-nav-link">{{ 'NAV.WIKI' | translate }}</a>
+        <a mat-button routerLink="/tools" routerLinkActive="active-nav-link">{{ 'NAV.TOOLS' | translate }}</a>
+        <a mat-button routerLink="/about" routerLinkActive="active-nav-link">{{ 'NAV.ABOUT' | translate }}</a>
+        <a mat-button routerLink="/faq" routerLinkActive="active-nav-link">{{ 'NAV.FAQ' | translate }}</a>
+      </nav>
+    }
+  </mat-toolbar>
+</header>
 
 <mat-sidenav-container class="sidenav-container">
 
-  @if (isSidenavVisible) {
+  @if (shouldRenderSidenav()) {
     <mat-sidenav
       position="start"
       [mode]="sidenavMode()"
@@ -43,8 +50,16 @@
             <span matListItemTitle>{{ 'NAV.WIKI' | translate }}</span>
           </a>
           <a mat-list-item routerLink="/tools" (click)="closeSidenavOnMobile()">
-            <mat-icon matListItemIcon>apps</mat-icon>
+            <mat-icon matListItemIcon>calculate</mat-icon>
             <span matListItemTitle>{{ 'NAV.TOOLS' | translate }}</span>
+          </a>
+          <a mat-list-item routerLink="/about" (click)="closeSidenavOnMobile()">
+            <mat-icon matListItemIcon>info</mat-icon>
+            <span matListItemTitle>{{ 'NAV.ABOUT' | translate }}</span>
+          </a>
+          <a mat-list-item routerLink="/faq" (click)="closeSidenavOnMobile()">
+            <mat-icon matListItemIcon>quiz</mat-icon>
+            <span matListItemTitle>{{ 'NAV.FAQ' | translate }}</span>
           </a>
         </mat-nav-list>
         <mat-divider></mat-divider>
@@ -204,7 +219,88 @@
   }
 
   <mat-sidenav-content class="sidenav-content" [class.no-padding]="!isSidenavVisible">
-    <router-outlet />
+    <div class="main-page-wrapper">
+      <router-outlet />
+    </div>
+
+    <!-- Global Footer -->
+    <footer class="app-footer">
+      <div class="footer-container">
+        <!-- Brand column -->
+        <div class="footer-col footer-brand-col">
+          <div class="footer-brand">
+            <img src="logo-icon-96.webp" alt="" class="footer-logo" width="34" height="34" />
+            <span class="footer-title">{{ 'NAV.TITLE' | translate }}</span>
+          </div>
+          <p class="footer-tagline">{{ 'FOOTER.TAGLINE' | translate }}</p>
+        </div>
+
+        <!-- Nav column -->
+        <div class="footer-col">
+          <h4 class="footer-heading">{{ 'FOOTER.NAV_TITLE' | translate }}</h4>
+          <ul class="footer-links">
+            <li><a routerLink="/">{{ 'NAV.HOME' | translate }}</a></li>
+            <li><a routerLink="/wiki">{{ 'NAV.WIKI' | translate }}</a></li>
+            <li><a routerLink="/tools">{{ 'NAV.TOOLS' | translate }}</a></li>
+          </ul>
+        </div>
+
+        <!-- Info column -->
+        <div class="footer-col">
+          <h4 class="footer-heading">{{ 'FOOTER.INFO_TITLE' | translate }}</h4>
+          <ul class="footer-links">
+            <li><a routerLink="/about">{{ 'NAV.ABOUT' | translate }}</a></li>
+            <li><a routerLink="/faq">{{ 'NAV.FAQ' | translate }}</a></li>
+          </ul>
+        </div>
+
+        <!-- Help / Contact column -->
+        <div class="footer-col">
+          <h4 class="footer-heading">{{ 'FOOTER.HELP_TITLE' | translate }}</h4>
+          <div class="help-info">
+            <div class="help-line">
+              <mat-icon class="help-icon">phone_in_talk</mat-icon>
+              <span>{{ 'FOOTER.INSPECTORATE' | translate }}: <strong class="phone-number">{{ siteConfig.labourInspectoratePhone }}</strong></span>
+            </div>
+            @if (hasContact) {
+              @if (siteConfig.contactEmail) {
+                <a [href]="'mailto:' + siteConfig.contactEmail" class="help-link">
+                  <mat-icon>mail</mat-icon> {{ siteConfig.contactEmail }}
+                </a>
+              }
+              @if (siteConfig.contactUrl) {
+                <a [href]="siteConfig.contactUrl" target="_blank" rel="noopener" class="help-link">
+                  <mat-icon>open_in_new</mat-icon> {{ 'FOOTER.CONTACT' | translate }}
+                </a>
+              }
+            } @else {
+              <p class="help-soon">{{ 'FOOTER.CONTACT_SOON' | translate }}</p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-bottom-inner">
+          <p class="disclaimer">{{ 'FOOTER.DISCLAIMER' | translate }}</p>
+          <div class="credits">
+            <span class="credits-year">&copy; {{ currentYear }}</span>
+            <ul class="credits-orgs">
+              @for (org of siteConfig.organizations; track org.name) {
+                <li>
+                  @if (org.url) {
+                    <a [href]="org.url" target="_blank" rel="noopener noreferrer">{{ org.name }}</a>
+                  } @else {
+                    {{ org.name }}
+                  }
+                  @if ($last) { ({{ siteConfig.organizationShort }})}
+                </li>
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
 
     <button mat-fab
             color="accent"

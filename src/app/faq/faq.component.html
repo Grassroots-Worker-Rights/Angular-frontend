@@ -1,0 +1,160 @@
+<div class="page-container">
+  <!-- Header / Banner -->
+  <header class="page-header">
+    <div class="header-bg" aria-hidden="true">
+      <div class="header-rays"></div>
+      <div class="header-glow"></div>
+    </div>
+    <div class="header-content">
+      <span class="eyebrow">{{ 'FAQ.EYEBROW' | translate }}</span>
+      <h1 class="page-title">{{ 'FAQ.TITLE' | translate }}</h1>
+      <p class="lead">{{ 'FAQ.LEAD' | translate }}</p>
+
+      <!-- Search Filter in Hero Header -->
+      <div class="faq-search-box">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input type="text"
+               [placeholder]="'FAQ.FILTER_PLACEHOLDER' | translate"
+               [value]="filterQuery()"
+               (input)="filterQuery.set($any($event.target).value)"
+               autocomplete="off" />
+        @if (filterQuery()) {
+          <button mat-icon-button (click)="clearSearch()" [attr.aria-label]="'FAQ.CLEAR' | translate">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </div>
+    </div>
+  </header>
+
+  <!-- Body -->
+  <main class="page-body">
+    <!-- Category Chips -->
+    @if (data(); as faq) {
+      <div class="category-tabs" role="tablist" [attr.aria-label]="'FAQ.CATEGORIES_LABEL' | translate">
+        <button type="button"
+                class="tab-btn"
+                [class.active]="selectedCategory() === 'all'"
+                (click)="selectCategory('all')">
+          {{ 'FAQ.ALL' | translate }}
+        </button>
+        @for (cat of faq.categories; track cat.id) {
+          <button type="button"
+                  class="tab-btn"
+                  [class.active]="selectedCategory() === cat.id"
+                  (click)="selectCategory(cat.id)">
+            <mat-icon class="tab-icon">{{ cat.icon }}</mat-icon>
+            {{ cat.letter }}. {{ cat.title }}
+          </button>
+        }
+      </div>
+    }
+
+    <!-- Toolbar: Results Count & Expand/Collapse -->
+    <div class="faq-toolbar">
+      <span class="count-badge">
+        {{ 'FAQ.RESULTS' | translate: { count: totalMatchingCount() } }}
+      </span>
+
+      <div class="expand-controls">
+        <button mat-button (click)="expandAll()">
+          <mat-icon>unfold_more</mat-icon> {{ 'FAQ.EXPAND_ALL' | translate }}
+        </button>
+        <button mat-button (click)="collapseAll()">
+          <mat-icon>unfold_less</mat-icon> {{ 'FAQ.COLLAPSE_ALL' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Questions Accordion Groups -->
+    @if (filteredCategories().length > 0) {
+      <div class="categories-list">
+        @for (cat of filteredCategories(); track cat.id) {
+          <section class="category-section">
+            <div class="category-header">
+              <mat-icon class="cat-icon">{{ cat.icon }}</mat-icon>
+              <h2>{{ cat.letter }}. {{ cat.title }}</h2>
+            </div>
+
+            <mat-accordion multi class="faq-accordion">
+              @for (item of cat.items; track item.id) {
+                <mat-expansion-panel
+                  [id]="'faq-item-' + item.id"
+                  [expanded]="isItemOpened(item.id)"
+                  (opened)="toggleItem(item.id, true)"
+                  (closed)="toggleItem(item.id, false)"
+                  class="faq-panel"
+                  [class.highlighted]="activeHash() === item.id">
+
+                  <mat-expansion-panel-header class="faq-panel-header">
+                    <mat-panel-title class="faq-question">
+                      {{ item.q }}
+                    </mat-panel-title>
+                    <mat-panel-description class="faq-actions">
+                      <button mat-icon-button
+                              class="copy-btn"
+                              [attr.aria-label]="'FAQ.COPY_LINK' | translate"
+                              (click)="copyLink(item.id, $event)"
+                              title="Αντιγραφή συνδέσμου ερώτησης">
+                        <mat-icon>link</mat-icon>
+                      </button>
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+
+                  <div class="faq-answer">
+                    @for (paragraph of item.a; track $index) {
+                      <p>{{ paragraph }}</p>
+                    }
+
+                    @if (item.contact) {
+                      <div class="contact-card">
+                        @if (hasContact) {
+                          <div class="contact-links">
+                            @if (siteConfig.contactEmail) {
+                              <a [href]="'mailto:' + siteConfig.contactEmail" class="contact-btn">
+                                <mat-icon>mail</mat-icon> {{ siteConfig.contactEmail }}
+                              </a>
+                            }
+                            @if (siteConfig.contactUrl) {
+                              <a [href]="siteConfig.contactUrl" target="_blank" rel="noopener" class="contact-btn">
+                                <mat-icon>open_in_new</mat-icon> Ιστοσελίδα Επικοινωνίας
+                              </a>
+                            }
+                          </div>
+                        } @else {
+                          <p class="contact-placeholder"><em>{{ 'FOOTER.CONTACT_SOON' | translate }}</em></p>
+                        }
+                      </div>
+                    }
+                  </div>
+                </mat-expansion-panel>
+              }
+            </mat-accordion>
+          </section>
+        }
+      </div>
+    } @else {
+      <!-- Empty state -->
+      <div class="empty-state">
+        <mat-icon class="empty-icon">search_off</mat-icon>
+        <p>{{ 'FAQ.NO_RESULTS' | translate: { query: filterQuery() } }}</p>
+        <button mat-stroked-button color="warn" (click)="clearSearch()">
+          {{ 'FAQ.CLEAR' | translate }}
+        </button>
+      </div>
+    }
+
+    <!-- CTA Section -->
+    <section class="cta-banner">
+      <div class="cta-content">
+        <h2>{{ 'FAQ.CTA_TITLE' | translate }}</h2>
+        <p>{{ 'FAQ.CTA_TEXT' | translate }}</p>
+        <div class="cta-actions">
+          <button mat-flat-button color="warn" class="btn-primary" (click)="openAiChat()">
+            <mat-icon>smart_toy</mat-icon> {{ 'FAQ.CTA_ASK' | translate }}
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
 import { Router } from '@angular/router';
@@ -13,11 +13,12 @@ import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { LayoutService } from './services/layout.service';
 import { WikiService, WikiCategory } from './services/wiki.service';
-import { AiChatDialogComponent } from './ai-chat-dialog/ai-chat-dialog.component';
+import { ChatLauncherService } from './services/chat-launcher.service';
 import { SearchComponent } from './search/search.component';
+import { SITE_CONFIG, hasContactInfo } from './site-config';
 
 @Component({
   selector: 'app-root',
@@ -48,19 +49,23 @@ export class App implements OnInit, OnDestroy {
     this.isDesktop() ? 'side' : 'over'
   );
   isSidenavVisible = true;
+  shouldRenderSidenav = computed(() => !this.isDesktop() || this.isSidenavVisible);
+
   activeMenu: 'tools' | 'wiki' = 'tools';
   wikiCategories: WikiCategory[] = [];
 
+  readonly siteConfig = SITE_CONFIG;
+  readonly hasContact = hasContactInfo();
+  readonly currentYear = new Date().getFullYear();
+
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private breakpointObserver: BreakpointObserver,
-    private translate: TranslateService,
-    private router: Router,
-    private layoutService: LayoutService,
-    private wikiService: WikiService,
-    private dialog: MatDialog,
-  ) {}
+  private breakpointObserver = inject(BreakpointObserver);
+  private translate = inject(TranslateService);
+  private router = inject(Router);
+  private layoutService = inject(LayoutService);
+  private wikiService = inject(WikiService);
+  private chatLauncher = inject(ChatLauncherService);
 
   ngOnInit(): void {
     this.translate.setDefaultLang('el');
@@ -71,7 +76,11 @@ export class App implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(state => {
         this.isDesktop.set(state.matches);
-        this.sidenavOpened.set(state.matches);
+        if (state.matches) {
+          this.sidenavOpened.set(this.isSidenavVisible);
+        } else {
+          this.sidenavOpened.set(false);
+        }
       });
 
     this.layoutService.sidenavVisible$
@@ -79,7 +88,9 @@ export class App implements OnInit, OnDestroy {
       .subscribe(visible => {
         this.isSidenavVisible = visible;
         if (!visible) {
-          this.sidenavOpened.set(false);
+          if (this.isDesktop()) {
+            this.sidenavOpened.set(false);
+          }
         } else if (this.isDesktop()) {
           this.sidenavOpened.set(true);
         }
@@ -103,7 +114,6 @@ export class App implements OnInit, OnDestroy {
       filter(event => event instanceof NavigationEnd),
       takeUntil(this.destroy$)
     ).subscribe((event: any) => {
-      
       // Scroll to top on every route change (e.g. navigating to a new article)
       const contentArea = document.querySelector('.sidenav-content');
       if (contentArea) {
@@ -145,10 +155,6 @@ export class App implements OnInit, OnDestroy {
   }
 
   navigateToSupport(): void {
-    this.dialog.open(AiChatDialogComponent, {
-      width: '95vw',
-      maxWidth: '700px',
-      panelClass: 'chat-dialog-panel',
-    });
+    this.chatLauncher.open();
   }
 }

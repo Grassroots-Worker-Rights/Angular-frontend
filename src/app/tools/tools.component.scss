@@ -9,7 +9,7 @@
 }
 
 .page-title {
-  font-family: 'Oswald', sans-serif;
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: 2rem;
   color: #1f2937;
@@ -27,7 +27,7 @@
 }
 
 .category-title {
-  font-family: 'Oswald', sans-serif;
+  font-family: var(--font-display);
   font-weight: 500;
   font-size: 1.4rem;
   color: #1f2937;
