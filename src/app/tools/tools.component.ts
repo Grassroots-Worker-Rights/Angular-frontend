@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
@@ -7,6 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
 import { LayoutService } from '../services/layout.service';
+import { SeoService } from '../services/seo.service';
+import { SITE_CONFIG } from '../site-config';
 import { GrossToNetDialogComponent } from './dialogs/gross-to-net-dialog/gross-to-net-dialog.component';
 import { LeaveDaysDialogComponent } from './dialogs/leave-days-dialog/leave-days-dialog.component';
 import { LeavePartTimeDialogComponent } from './dialogs/leave-part-time-dialog/leave-part-time-dialog.component';
@@ -38,6 +40,7 @@ import { RetirementSeveranceDialogComponent } from './dialogs/retirement-severan
   styleUrl: './tools.component.scss',
 })
 export class ToolsComponent implements OnInit, OnDestroy {
+  private readonly seoService = inject(SeoService);
   private destroy$ = new Subject<void>();
   toolCategories = [
     {
@@ -103,6 +106,30 @@ export class ToolsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.layoutService.showSidenav();
 
+    const allTools = this.toolCategories.flatMap(cat => cat.tools);
+    this.seoService.updatePageSeo({
+      title: 'Εργαλεία Υπολογισμού',
+      description:
+        '17 δωρεάν εργαλεία υπολογισμού εργασιακών δικαιωμάτων: καθαρός/μικτός μισθός, δώρο Πάσχα & Χριστουγέννων, αποζημίωση απόλυσης, άδειες, υπερωρίες, επίδομα ανεργίας και σύνταξη.',
+      path: '/tools',
+      type: 'website',
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: `Εργαλεία Υπολογισμού — ${SITE_CONFIG.name}`,
+        description:
+          'Δωρεάν online υπολογιστές εργατικών δικαιωμάτων βάσει της ελληνικής εργατικής νομοθεσίας.',
+        url: `${SITE_CONFIG.siteUrl}/tools`,
+        numberOfItems: allTools.length,
+        itemListElement: allTools.map((tool, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: tool.name,
+          url: `${SITE_CONFIG.siteUrl}/tools#${tool.componentKey}`,
+        })),
+      },
+    });
+
     // Listen to URL fragment changes from sidebar links and open the corresponding tool
     this.route.fragment.pipe(
       takeUntil(this.destroy$),
@@ -122,6 +149,7 @@ export class ToolsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.seoService.removeJsonLd();
   }
 
   // Registry mapping tool keys to their dialog components and config

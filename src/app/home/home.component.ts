@@ -8,6 +8,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LayoutService } from '../services/layout.service';
 import { WikiService, WikiCategory } from '../services/wiki.service';
 import { ChatLauncherService } from '../services/chat-launcher.service';
+import { SeoService } from '../services/seo.service';
 import { SITE_CONFIG } from '../site-config';
 import { Season, getSeason, getSeasonById } from './season';
 
@@ -27,6 +28,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private translate = inject(TranslateService);
   private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
+  private seoService = inject(SeoService);
 
   readonly suggestionKeys = [
     'HOME.HERO.SUGGESTION_1',
@@ -50,6 +52,36 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.layoutService.hideSidenav();
 
+    this.seoService.updatePageSeo({
+      title: SITE_CONFIG.name,
+      rawTitle: true,
+      description: SITE_CONFIG.defaultDescription,
+      path: '/',
+      type: 'website',
+      jsonLd: [
+        {
+          '@type': 'WebSite',
+          name: SITE_CONFIG.name,
+          url: `${SITE_CONFIG.siteUrl}/`,
+          inLanguage: 'el-GR',
+          description: SITE_CONFIG.defaultDescription,
+        },
+        {
+          '@type': 'Organization',
+          name: SITE_CONFIG.name,
+          alternateName: SITE_CONFIG.organizationShort,
+          url: `${SITE_CONFIG.siteUrl}/`,
+          logo: SITE_CONFIG.defaultOgImage,
+          sameAs: SITE_CONFIG.organizations.map(org => org.url).filter(Boolean),
+          member: SITE_CONFIG.organizations.map(org => ({
+            '@type': 'Organization',
+            name: org.name,
+            ...(org.url ? { url: org.url } : {}),
+          })),
+        },
+      ],
+    });
+
     this.route.queryParamMap
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(params => {
@@ -72,6 +104,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.rafIds.forEach(id => cancelAnimationFrame(id));
     this.layoutService.showSidenav();
+    this.seoService.removeJsonLd();
   }
 
   /** Opens the AI chat; with text it is sent immediately as the first question. */

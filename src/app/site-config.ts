@@ -7,6 +7,10 @@
  */
 export const SITE_CONFIG = {
   name: 'Εργασιακός Οδηγός Βάσης',
+  siteUrl: 'https://ergasiakos-odigos.gr',
+  defaultDescription:
+    'Εργασιακός Οδηγός Βάσης: δωρεάν και ανώνυμος οδηγός εργασιακών δικαιωμάτων. Άρθρα, εργαλεία υπολογισμού (αποζημίωση, δώρα, άδειες, υπερωρίες) και AI βοηθός.',
+  defaultOgImage: 'https://ergasiakos-odigos.gr/logo-icon.png',
   /**
    * The collectives that make the guide; each is shown on its own line in the footer.
    * Fill in `url` (e.g. 'https://example.gr') to make the name clickable; leave it '' for plain text.

@@ -13,6 +13,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LayoutService } from '../services/layout.service';
 import { ChatLauncherService } from '../services/chat-launcher.service';
+import { SeoService } from '../services/seo.service';
 import { SITE_CONFIG, hasContactInfo } from '../site-config';
 
 export interface FaqItem {
@@ -61,6 +62,7 @@ export class FaqComponent implements OnInit, OnDestroy {
   private translate = inject(TranslateService);
   private layoutService = inject(LayoutService);
   private chatLauncher = inject(ChatLauncherService);
+  private seoService = inject(SeoService);
 
   readonly siteConfig = SITE_CONFIG;
   readonly hasContact = hasContactInfo();
@@ -103,6 +105,14 @@ export class FaqComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.layoutService.hideSidenav();
+
+    this.seoService.updatePageSeo({
+      title: 'Συχνές ερωτήσεις',
+      description:
+        'Συχνές ερωτήσεις και απαντήσεις για εργασιακά δικαιώματα, ωράριο, υπερωρίες, άδειες, δώρα, απολύσεις, συνδικαλισμό και τη χρήση του Εργασιακού Οδηγού Βάσης.',
+      path: '/faq',
+      type: 'website',
+    });
 
     this.http.get<FaqData>('./assets/content/faq.json').subscribe({
       next: (faq) => {
@@ -228,10 +238,10 @@ export class FaqComponent implements OnInit, OnDestroy {
       cat.items.forEach(item => {
         entities.push({
           '@type': 'Question',
-          'name': item.q,
+          'name': this.seoService.stripInlineMarkdown(item.q),
           'acceptedAnswer': {
             '@type': 'Answer',
-            'text': item.a.join(' '),
+            'text': this.seoService.stripInlineMarkdown(item.a.join(' ')),
           },
         });
       });
