@@ -24,7 +24,10 @@ export const appConfig: ApplicationConfig = {
     ),
     {
       provide: TRANSLATE_HTTP_LOADER_CONFIG,
-      useValue: { prefix: './assets/i18n/', suffix: '.json' },
+      // "?v=" changes the URL so browsers drop copies of el.json cached before nginx sent
+      // Cache-Control for /assets/. Bump it only if that ever happens again; nginx's no-cache keeps
+      // the file fresh on normal deploys.
+      useValue: { prefix: './assets/i18n/', suffix: '.json?v=2' },
     },
   ],
 };
